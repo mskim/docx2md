@@ -84,22 +84,16 @@ module Docx2md
         end
         
         def to_markdown
-          # binding.pry
           v_align_node = @node.at_xpath('.//w:vertAlign')
           if v_align_node
             align_value = v_align_node.attribute('val').value
             if align_value == 'superscript'
-              # binding.pry
-              reference_node = v_align_node.at_xpath('//w:footnoteReference')
-              @footnote_id = reference_node.attribute('id').value
+              reference_node = @node.at_xpath('w:footnoteReference')
+              footnote_id = reference_node.attribute('id').value
               markdown = "[^#{footnote_id}]"
-              # TODO: get footnote referenceText
-
-
-              
               return markdown
             else
-              # handle subsscipt
+              # handle subscript
             end
           end
 

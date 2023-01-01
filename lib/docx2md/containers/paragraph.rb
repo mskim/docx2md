@@ -7,7 +7,7 @@ module Docx2md
       class Paragraph
         include Container
         include Elements::Element
-        attr_reader :paragraph_footnote_descrptions, :footnote_number
+        attr_reader :paragraph_footnotes, :footnote_number
         def self.tag
           'p'
         end
@@ -20,7 +20,7 @@ module Docx2md
           @properties_tag = 'pPr'
           @document_properties = document_properties
           @font_size = @document_properties[:font_size]
-          @paragraph_footnote_descrptions = []
+          @paragraph_footnotes = []
         end
 
         # Set text of paragraph
@@ -60,14 +60,14 @@ module Docx2md
           text = ''
           text_runs.each do |text_run|
             md = text_run.to_markdown
-            if md=~/\[^(\d+?)\]/
-              binding.pry
+            if md=~/\[\^(\d+?)\]/
               footnote_id = $1
               md = "[^#{footnote_number}]"
-              footnote_number += 1
               footnote_descrption_text =  footnotes_hash[footnote_id]
               footnote_descrption  = "[^#{footnote_number}]: #{footnote_descrption_text}"
-              @paragraph_footnote_descrptions << footnote_descrption
+              footnote_number += 1
+              @paragraph_footnotes << footnote_descrption
+              text += md
             else
               text += md
             end
@@ -99,7 +99,13 @@ module Docx2md
           else
             markup = ""
           end
-          markup + content + "\n"
+          para_text = markup + content + "\n"
+          @paragraph_footnotes.each_with_index do |note, i|
+            para_text += "\n"
+            para_text += "#{note}"
+            para_text += "\n"
+          end
+          para_text
         end
         
 
