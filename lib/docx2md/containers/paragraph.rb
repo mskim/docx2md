@@ -56,14 +56,14 @@ module Docx2md
         def to_markdown(document)
           styles_hash  = document.styles_hash
           footnotes_hash  = document.footnotes_hash
-          binding.pry
           footnote_number  = document.footnote_number
           text = ''
           text_runs.each do |text_run|
             md = text_run.to_markdown
             if md=~/\[^(\d+?)\]/
+              binding.pry
               footnote_id = $1
-              md = "[^#{@footnote_number}]"
+              md = "[^#{footnote_number}]"
               footnote_number += 1
               footnote_descrption_text =  footnotes_hash[footnote_id]
               footnote_descrption  = "[^#{footnote_number}]: #{footnote_descrption_text}"
