@@ -82,11 +82,11 @@ module Docx2md
           markup = ""
           content = text
           case paragraph_style_name
-          when "Heading 1"
+          when "Heading 1", "장제목"
             markup = "# "
-          when "Heading 2"
+          when "Heading 2", /좌즉/
             markup = "## "
-          when "Heading 3"
+          when "Heading 3", /우측/
             markup = "### "
             when "Heading 4"
             markup = "#### "
@@ -94,8 +94,10 @@ module Docx2md
             markup = "##### "
           when "Heading 6"
             markup = "###### "
-          when "Text Block"
-            markup = "> "
+          when "Text Block", /인용/
+            markup = text.split("\n").map do |line|
+              markup = "> #{line}" + "\n"
+            end
           else
             markup = ""
           end

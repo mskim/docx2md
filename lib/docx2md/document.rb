@@ -31,10 +31,8 @@ module Docx2md
       else
         @zip = Zip::File.open_buffer(path_or_io)
       end
-
       document = @zip.glob('word/document*.xml').first
       raise Errno::ENOENT if document.nil?
-
       @document_xml = document.get_input_stream.read
       @doc = Nokogiri::XML(@document_xml)
       load_styles
@@ -143,14 +141,18 @@ module Docx2md
 
     def build_footnotes_hash
       @footnotes_hash = {}
-      footnotes_xml = @zip.read('word/footnotes.xml')
-      xml_node = Nokogiri::XML(footnotes_xml)
-      footnote_nodes = xml_node.xpath('//w:footnotes//w:footnote')
-      footnote_nodes.each do |footnote|
-        footnote_id = footnote.attribute('id').value
-        footnote_text_node = footnote.at_xpath('.//w:t')
-        footnote_text = footnote_text_node.text
-        @footnotes_hash[footnote_id] = footnote_text
+      # first check if there are any footnotes
+      footnotes_files = @zip.entries.map{|e| e.name}.select{|name| name=~/footnotes.xml/}.first
+      if footnotes_files
+        footnotes_xml = @zip.read('word/footnotes.xml')
+        xml_node = Nokogiri::XML(footnotes_xml)
+        footnote_nodes = xml_node.xpath('//w:footnotes//w:footnote')
+        footnote_nodes.each do |footnote|
+          footnote_id = footnote.attribute('id').value
+          footnote_text_node = footnote.at_xpath('.//w:t')
+          footnote_text = footnote_text_node.text
+          @footnotes_hash[footnote_id] = footnote_text
+        end
       end
       @footnotes_hash
     end
