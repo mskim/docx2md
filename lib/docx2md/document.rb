@@ -20,7 +20,8 @@ module Docx2md
   class Document
     attr_reader :xml, :doc, :zip, :styles
     attr_reader :styles_hash, :footnotes_hash
-
+    attr_accessor :footnote_number
+    
     def initialize(path_or_io, options = {})
       @replace = {}
 
@@ -123,6 +124,7 @@ module Docx2md
     def to_markdown
       build_styles_hash
       build_footnotes_hash
+      @footnote_number = 1
       paragraphs.map{|p| p.to_markdown(self)}.join("\n")
     end
 
