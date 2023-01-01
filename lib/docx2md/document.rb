@@ -140,11 +140,11 @@ module Docx2md
     end
 
     def build_footnotes_hash
-      @footnote_xml = @zip.read('word/footnotes.xml')
-      @footnotes = Nokogiri::XML(@footnote_xml)
+      footnote_xml = @zip.read('word/footnotes.xml')
+      footnotes = Nokogiri::XML(footnote_xml)
       @footnotes_hash = {}
       footnotes.each do |footnote|
-        binding.pry
+        # binding.pry
         footnote_id = footnote.attribute('id').value
         footnote_text_node = footnote.at_xpath('.//w:t')
         footnote_text = footnote_text_node.text

@@ -9,5 +9,5 @@ task default: :spec
 
 desc "Open an irb session preloaded with this library."
 task :console do
-  sh "irb -I lib/ -r docx"
+  sh "irb -I lib/ -r docx2md"
 end
