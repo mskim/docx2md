@@ -94,10 +94,12 @@ module Docx2md
             markup = "##### "
           when "Heading 6"
             markup = "###### "
-          when "Text Block", /인용/
-            markup = text.split("\n").map do |line|
-              markup = "> #{line}" + "\n"
+          when "Block Text", /인용/
+            markup = ""
+            content = text.split("\n").map do |line|
+              "> #{line}"
             end
+            content = content.join("\n")
           else
             markup = ""
           end
