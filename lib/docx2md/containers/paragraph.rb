@@ -56,6 +56,7 @@ module Docx2md
         def to_markdown(document)
           styles_hash  = document.styles_hash
           footnotes_hash  = document.footnotes_hash
+          binding.pry
           footnote_number  = document.footnote_number
           text = ''
           text_runs.each do |text_run|

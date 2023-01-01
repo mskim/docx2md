@@ -5,3 +5,4 @@ module Docx2md #:nodoc:
 end
 
 require 'docx2md/core_ext/module'
+require 'pry-byebug'
