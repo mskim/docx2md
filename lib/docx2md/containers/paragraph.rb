@@ -8,6 +8,7 @@ module Docx2md
         include Container
         include Elements::Element
         attr_reader :paragraph_footnotes, :footnote_number
+        attr_reader :text_with_footnote
         def self.tag
           'p'
         end
@@ -53,6 +54,27 @@ module Docx2md
           html_tag(:p, content: html, styles: styles)
         end
 
+        def to_txt(document)
+          footnotes_hash  = document.footnotes_hash
+          footnote_number  = document.footnote_number
+          text = ''
+          text_runs.each do |text_run|
+            md = text_run.to_markdown
+            if md=~/\[\^(\d+?)\]/
+              footnote_id = $1
+              md = "[^#{footnote_number}]"
+              footnote_descrption_text =  footnotes_hash[footnote_id]
+              footnote_descrption  = "[^#{footnote_number}]: #{footnote_descrption_text}"
+              footnote_number += 1
+              @paragraph_footnotes << footnote_descrption
+              text += md
+            else
+              text += md
+            end
+          end
+          document.txt_with_footnote  = text
+        end
+
         def to_markdown(document)
           styles_hash  = document.styles_hash
           footnotes_hash  = document.footnotes_hash
@@ -75,7 +97,20 @@ module Docx2md
           para_style_node =  @node.xpath('w:pPr/w:pStyle')
           style_id = para_style_node.attribute('val').value
           style_name = styles_hash[style_id]
-          markdown_tag(style_name, text)
+          markdown_tag(paragraph_style_name,  text)
+        end
+
+        # we use `` mark to indicate blockquote
+        # so, convert it to blockquote
+        def convert_to_markdown(text)
+          if text=~/``/
+            content = text.split("\n").map do |line|
+              "> #{line}"
+            end
+            content = content.join("\n")
+          else
+            text += "\n"
+          end
         end
 
         def markdown_tag(paragraph_style_name,  text)
