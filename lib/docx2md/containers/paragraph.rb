@@ -72,7 +72,7 @@ module Docx2md
               text += md
             end
           end
-          document.txt_with_footnote  = text
+          text
         end
 
         def to_markdown(document)
